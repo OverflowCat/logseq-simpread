@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Simpread</title>
+    <script src="https://cdn.jsdelivr.net/npm/@logseq/libs/dist/lsplugin.user.min.js"></script>
+  </head>
+
+  <body>
+    <script>
+      const sleep = async (ms) => {
+        return new Promise((resolve) => {
+          setTimeout(resolve, ms);
+        });
+      };
+
+      const isSimpreadLink = (url) =>
+        url.startsWith("http://localhost:7026/") ||
+        url.startsWith("http://127.0.0.1:7026/") ||
+        url.startsWith("simpread://");
+
+      async function openSimpreadPanel(url) {
+        logseq.App.setRightSidebarVisible(true);
+        let ele = document.querySelectorAll("div.simpread-panel");
+        while (ele.length == 0) await sleep(100); // retry until simpread panel is ready
+        document.querySelector("button.simpread-panel").click();
+        while (!ele[0].querySelector(iframe)) await sleep(100);
+        let iframe = ele[0].querySelector("iframe");
+        if (iframe?.src != url) iframe.src = url;
+      }
+
+      function hookSimpreadLinks(pointerEvent) {
+        const ele = pointerEvent.target || pointerEvent.srcElement;
+        if (
+          ele.tagName === "A" &&
+          isSimpreadLink(ele.href) &&
+          ele.className.includes("external-link")
+        ) {
+          logseq.App.showMsg("Clicked!");
+          pointerEvent.preventDefault(); // prevent external link from opening
+          openSimpreadPanel(ele.href);
+        }
+      }
+
+      function createElementFromHTML(htmlString) {
+        var div = document.createElement("div");
+        div.innerHTML = htmlString;
+        return div.firstElementChild;
+      }
+
+      function showIframe() {
+        let iframe = document.querySelector("iframe.simpread-iframe");
+        if (iframe) {
+          iframe.style.display = "block";
+          return;
+        }
+        const html = `<iframe class="simpread-iframe" src="http://localhost:7026/unread/" title="简悦·稍后读" height="100%" width="100%" id="frame_full" frameborder="0" scrolling="auto"></iframe>`;
+        let ele = createElementFromHTML(html);
+        let topbar = document.querySelector("div.cp__right-sidebar-topbar");
+        topbar.insertAdjacentElement("afterend", ele);
+      }
+
+      function hideIframe() {
+        let iframe = document.querySelector("iframe.simpread-iframe");
+        iframe.style.display = "none";
+      }
+
+      function addEventListeners(srBtn) {
+        srBtn.addEventListener("click", showIframe);
+        let currBtn = srBtn;
+        while (currBtn.previousElementSibling) {
+          currBtn.addEventListener("click", hideIframe);
+          currBtn = currBtn.previousElementSibling;
+        }
+      }
+
+      function injectSimpreadBtn() {
+        if (document.querySelectorAll("div.simpread-panel").length != 0) return; // The button is already there
+        let settings = document.querySelector("div.cp__right-sidebar-settings");
+        // check if settings has lastElementChild
+        if (settings.childElementCount == 0) return; // The sidebar is not visible
+        let lastBtn = settings.lastElementChild;
+        let srBtn = lastBtn.cloneNode(true);
+        srBtn.firstElementChild.innerText = "简悦";
+        srBtn.className += " simpread-panel";
+        addEventListeners(srBtn);
+        lastBtn.insertAdjacentElement("afterend", srBtn);
+      }
+
+      function main() {
+        logseq.App.showMsg("❤️ Welcome to logseq-simpread!");
+        // setInterval(injectSimpreadBtn, 1000);
+        logseq.App.onSidebarVisibleChanged(
+          (ctx) => ctx.visible && injectSimpreadBtn()
+        );
+        top?.document.addEventListener("click", hookSimpreadLinks, {
+          // must use top
+          once: false,
+        });
+      }
+      logseq.ready(main).catch(console.error);
+    </script>
+  </body>
+</html>
