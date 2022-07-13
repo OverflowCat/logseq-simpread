@@ -16,6 +16,14 @@
         });
       };
 
+      const retry = async (f, ms) => {
+        while (true) {
+          const res = await f();
+          if (res) return res;
+          await sleep(ms);
+        }
+      };
+
       const isSimpreadLink = (url) =>
         url.startsWith("http://localhost:7026/") ||
         url.startsWith("http://127.0.0.1:7026/") ||
@@ -23,70 +31,91 @@
 
       async function openSimpreadPanel(url) {
         logseq.App.setRightSidebarVisible(true);
-        let ele = document.querySelectorAll("div.simpread-panel");
-        while (ele.length == 0) await sleep(100); // retry until simpread panel is ready
-        document.querySelector("button.simpread-panel").click();
-        while (!ele[0].querySelector(iframe)) await sleep(100);
-        let iframe = ele[0].querySelector("iframe");
-        if (iframe?.src != url) iframe.src = url;
+        await retry(() => {
+          let eles = top?.document.querySelectorAll("div.simpread-panel");
+          return eles.length !== 0;
+        }, 100);
+        showIframe(url);
       }
 
       function hookSimpreadLinks(pointerEvent) {
         const ele = pointerEvent.target || pointerEvent.srcElement;
+        console.log("ele is ", ele);
         if (
           ele.tagName === "A" &&
           isSimpreadLink(ele.href) &&
           ele.className.includes("external-link")
         ) {
-          logseq.App.showMsg("Clicked!");
-          pointerEvent.preventDefault(); // prevent external link from opening
+          // logseq.App.showMsg("Clicked!");
           openSimpreadPanel(ele.href);
+          pointerEvent.preventDefault(); // prevent external link from opening
         }
       }
 
       function createElementFromHTML(htmlString) {
-        var div = document.createElement("div");
+        var div = top?.document.createElement("div");
         div.innerHTML = htmlString;
         return div.firstElementChild;
       }
 
-      function showIframe() {
-        let iframe = document.querySelector("iframe.simpread-iframe");
+      function showIframe(url = "http://localhost:7026/unread/") {
+        console.log("showIframe: url is", url);
+        let iframe = top?.document.querySelector("iframe.simpread-iframe");
         if (iframe) {
           iframe.style.display = "block";
+          if (iframe?.src != url) iframe.src = url;
           return;
         }
-        const html = `<iframe class="simpread-iframe" src="http://localhost:7026/unread/" title="简悦·稍后读" height="100%" width="100%" id="frame_full" frameborder="0" scrolling="auto"></iframe>`;
+        const html = `<iframe class="simpread-iframe" src="${url}" title="简悦·稍后读" height="100%" width="100%" id="frame_full" frameborder="0" scrolling="auto"></iframe>`;
         let ele = createElementFromHTML(html);
-        let topbar = document.querySelector("div.cp__right-sidebar-topbar");
+        let topbar = top?.document.querySelector(
+          "div.cp__right-sidebar-topbar"
+        );
         topbar.insertAdjacentElement("afterend", ele);
       }
 
       function hideIframe() {
-        let iframe = document.querySelector("iframe.simpread-iframe");
+        let iframe = top?.document.querySelector("iframe.simpread-iframe");
+        console.log(iframe);
         iframe.style.display = "none";
       }
 
       function addEventListeners(srBtn) {
-        srBtn.addEventListener("click", showIframe);
+        srBtn.addEventListener("click", showIframe, {
+          once: false,
+        });
         let currBtn = srBtn;
-        while (currBtn.previousElementSibling) {
-          currBtn.addEventListener("click", hideIframe);
-          currBtn = currBtn.previousElementSibling;
-        }
+        /*         while (currBtn?.previousElementSibling) {
+            currBtn.previousElementSibling.addEventListener("click", hideIframe);
+            currBtn = currBtn.previousElementSibling;
+          } */
+        top?.document
+          .querySelectorAll("button.cp__right-sidebar-settings-btn")
+          .forEach((btn) => {
+            console.log(btn);
+            if (btn.parentElement.classList.contains("simpread-panel")) return;
+            btn.addEventListener("click", hideIframe);
+          });
       }
 
-      function injectSimpreadBtn() {
-        if (document.querySelectorAll("div.simpread-panel").length != 0) return; // The button is already there
-        let settings = document.querySelector("div.cp__right-sidebar-settings");
+      async function injectSimpreadBtn() {
+        if (top?.document.querySelectorAll("div.simpread-panel").length != 0)
+          return; // The button is already there
+        let settings = top?.document.querySelector(
+          "div.cp__right-sidebar-settings"
+        );
         // check if settings has lastElementChild
-        if (settings.childElementCount == 0) return; // The sidebar is not visible
-        let lastBtn = settings.lastElementChild;
-        let srBtn = lastBtn.cloneNode(true);
-        srBtn.firstElementChild.innerText = "简悦";
-        srBtn.className += " simpread-panel";
-        addEventListeners(srBtn);
-        lastBtn.insertAdjacentElement("afterend", srBtn);
+        try {
+          let lastBtnDiv = settings.lastElementChild;
+          let srBtnDiv = lastBtnDiv.cloneNode(true);
+          srBtnDiv.firstElementChild.innerText = "简悦";
+          srBtnDiv.className += " simpread-panel";
+          addEventListeners(srBtnDiv);
+          lastBtnDiv.insertAdjacentElement("afterend", srBtnDiv);
+        } catch (e) {
+          await sleep(100);
+          injectSimpreadBtn();
+        }
       }
 
       function main() {
