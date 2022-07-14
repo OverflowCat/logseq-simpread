@@ -10,6 +10,8 @@
 
   <body>
     <script>
+      const isDebug = false;
+
       const sleep = async (ms) => {
         return new Promise((resolve) => {
           setTimeout(resolve, ms);
@@ -35,18 +37,18 @@
           let eles = top?.document.querySelectorAll("div.simpread-panel");
           return eles.length !== 0;
         }, 100);
-        showIframe(url);
+        showIframe(url, false);
       }
 
       function hookSimpreadLinks(pointerEvent) {
         const ele = pointerEvent.target || pointerEvent.srcElement;
-        // console.log("ele is ", ele);
+        // console.log("Clicked ele is ", ele);
         if (
           ele.tagName === "A" &&
           isSimpreadLink(ele.href) &&
           ele.className.includes("external-link")
         ) {
-          // logseq.App.showMsg("Clicked!");
+          isDebug && logseq.App.showMsg("Clicked!");
           openSimpreadPanel(ele.href);
           pointerEvent.preventDefault(); // prevent external link from opening
         }
@@ -58,12 +60,16 @@
         return div.firstElementChild;
       }
 
-      function showIframe(url = "http://localhost:7026/unread/") {
+      function showIframe(
+        url = "http://localhost:7026/unread/",
+        reload = true
+      ) {
         console.log("showIframe: url is", url);
         let iframe = top?.document.querySelector("iframe.simpread-iframe");
         if (iframe) {
           iframe.style.display = "block";
-          if (iframe?.src != url) iframe.src = url;
+          if (iframe?.src == url) reload && (iframe.src += "");
+          else iframe.src = url;
           return;
         }
         const html = `<iframe class="simpread-iframe" src="${url}" title="简悦·稍后读" height="100%" width="100%" id="frame_full" frameborder="0" scrolling="auto"></iframe>`;
@@ -85,10 +91,6 @@
           once: false,
         });
         let currBtn = srBtn;
-        /*         while (currBtn?.previousElementSibling) {
-            currBtn.previousElementSibling.addEventListener("click", hideIframe);
-            currBtn = currBtn.previousElementSibling;
-          } */
         top?.document
           .querySelectorAll("button.cp__right-sidebar-settings-btn")
           .forEach((btn) => {
@@ -119,7 +121,7 @@
       }
 
       function main() {
-        logseq.App.showMsg("❤️ Welcome to logseq-simpread!");
+        isDebug && logseq.App.showMsg("❤️ Welcome to logseq-simpread!");
         // setInterval(injectSimpreadBtn, 1000);
         logseq.App.onSidebarVisibleChanged(
           (ctx) => ctx.visible && injectSimpreadBtn()
@@ -138,16 +140,18 @@
         }
         logseq.provideModel(createModel());
         logseq.provideStyle(`
-            svg{enable-background:new 0 0 24 24; transform: scale(0.833333);}
+            svg{enable-background:new 0 0 20 20;}
             .st0{fill:none;}
-            .st1{fill:none;stroke:#383838;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
-            .st2{fill:#FFFFFF;stroke:#383838;stroke-miterlimit:10;}
+            .st1{fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+            .st2{fill:#FFFFFF;stroke-miterlimit:10;}
+            svg .st1, svg .st2{stroke:var(--ls-primary-text-color, #383838);}
+            svg .st1.dark, svg .st2.dark{stroke:var(--ls-link-text-color);}
             `);
         logseq.App.registerUIItem("toolbar", {
           key: "open-simpread-panel",
           template: `
           <a class="button" data-on-click="show">
-            <svg viewBox="0 0 24 24" x="0px" y="0px" width="24px" height="24px">
+            <svg class='simpread-toolbar-btn' viewBox="0 0 24 24" x="0px" y="0px" width="20px" height="20px">
             <path class="st0" d="M0,0h24v24H0V0z"/>
             <path class="st1" d="M7,3h10c1.1,0,2,0.9,2,2v14c0,1.1-0.9,2-2,2H7c-1.1,0-2-0.9-2-2V5C5,3.9,5.9,3,7,3z"/>
             <line class="st1" x1="5" y1="6" x2="19" y2="6"/>
@@ -161,7 +165,12 @@
           </a>
           `,
         });
+
+        /* logseq.App.onSidebarVisibleChanged(
+          (ctx) => ctx.visible && injectSimpreadBtn()
+        ); */
       }
+
       logseq.ready(main).catch(console.error);
     </script>
   </body>
