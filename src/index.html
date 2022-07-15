@@ -72,8 +72,10 @@
           else iframe.src = url;
           return;
         }
-        const html = `<iframe class="simpread-iframe" src="${url}" title="简悦·稍后读" height="100%" width="100%" id="frame_full" frameborder="0" scrolling="auto"></iframe>`;
+        const html = `<iframe class="simpread-iframe" src="${url}" title="简悦·稍后读" width="100%" id="frame_full" frameborder="0" scrolling="auto"></iframe>`;
         let ele = createElementFromHTML(html);
+        ele.style.height = "calc(100% - 200px)";
+        ele.style.margin = "0px";
         let topbar = top?.document.querySelector(
           "div.cp__right-sidebar-topbar"
         );
@@ -121,7 +123,7 @@
       }
 
       function main() {
-        isDebug && logseq.App.showMsg("❤️ Welcome to logseq-simpread!");
+        isDebug && logseq.App.showMsg("❤️ logseq-simpread has bean loaded!");
         // setInterval(injectSimpreadBtn, 1000);
         logseq.App.onSidebarVisibleChanged(
           (ctx) => ctx.visible && injectSimpreadBtn()
