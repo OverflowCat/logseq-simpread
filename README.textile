@@ -1,0 +1,55 @@
+h1. logseq-simpread
+
+The official logseq plugin of SimpRead.
+
+
+h2. Usage
+
+注意：本页面不包含使用教程，请前往 discussions 查看。
+
+Currently the plugin contains only one function: triggering the reading list panel.
+
+To use this plugin, you need:
+
+* SimpRead, the browser extension installed
+* A premium account of SimpRead activated
+* Official *简悦 · 同步助手* installed, version >= 1.1.0
+* *Knowledge base* configured
+* *Automation* configured and enabled
+* *Markdown 模板辅助增强插件* installed and template configured
+
+h2. Publishing
+
+h3. Packaging
+
+The code is written in a single vanilla HTML file. The only dependency is @lsplugin.user.min.js@. Just replace the one loaded from CDN with a local copy.
+
+h3. Logo
+
+Note that some objects are hidden. You can "mamage them with the Selection pane":https://support.microsoft.com/en-us/office/manage-objects-with-the-selection-pane-a6b2fd3e-d769-46c1-9b9c-b94e04a72550.
+
+To replicate @logo.svg@, please follow the instructions below:
+
+# Open the XML file with PowerPoint
+# Select all elements in the slide (<kbd>Ctrl</kbd>+<kbd>A</kbd>)
+# Group them (<kbd>Ctrl</kbd>+<kbd>G</kbd>)
+# Paste the combination in SVG format (<kbd>Ctrl</kbd>&#43;<kbd>Alt</kbd>&#43;<kbd>V</kbd>)
+# Right click, and save that SVG as a picture
+
+h2. Known issues  
+
+h3. @top.document@
+
+@top.document@ may be removed by Logseq.
+
+h3. Color of the toolbar icon looks bad in some themes
+
+Currently the toolbar icon is in SVG format, which requires @.st1{stroke: #xxxxxx}@ to control its color. However, most buttons on the toolbar is in icon fonts, making unofficial themes like Bear use another approach to control icon colors.
+
+h3. Scroll bar
+
+The style of the scroll bar of the iframe does not match the official one's. 
+
+h2. Roadmap
+
+A new plugin API based highlights synchronization will be added in the future. Since Logseq plugins has no access to Node environment, it is impossible to implement the API in the same way as using Local REST API in Obsidian.
