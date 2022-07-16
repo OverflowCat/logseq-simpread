@@ -1,0 +1,59 @@
+:PROPERTIES:
+:UID: {{timestamp}}
+:alias: {{title}}
+:source: {{url}}
+:snapshot: [{{idx}}](http://localhost:7026/reading/{{idx}}?embed=logseq)
+:tags: #SimpRead {{tags}}
+:index: {{idx}}
+:date: [[{{create|yyyy_mm_dd}}]]
+:END:
+#+TITLE: {{title}}
+
+* {{title}}
+<%
+const colors = [ '#B4D9FB', '#ffeb3b', '#a2e9f2', '#a1e0ff', '#a8ea68', '#ffb7da' ];
+const my_annotations = unread.annotations.map((annote, i) => {
+    const color = colors[annote.color];
+    const uri = `http://localhost:7026/unread/${unread.idx}?embed=logseq#id=${i + 1}`;
+    let res = `- ### [📌 #${i + 1}](${uri}) ${annote.tags}
+> [:p {:style {:background-color "${color}"}} 
+"${annote.text}"]`;
+    if (annote.note) res += "\n\n  - " + annote.note;
+    return res + '\n';
+}).join('\n');
+if (/[\u4E00-\u9FA5]|[\uFE30-\uFFA0]/gi.test(unread.title)) { %>
+
+<% if ( unread.refs ) { -%>
+- *外部引用* :: {{refs}}
+<% } -%>
+<% if (unread.desc) { -%>
+- ## ==摘要==
+  - #+BEGIN_QUOTE
+<%- unread.desc %>
+#+END_QUOTE
+<% } -%>
+
+## ==标注==
+<% if (unread.annotations.length > 0) { %>
+<%- my_annotations %>
+<% } %>
+
+<% } else { %>
+
+<% if ( unread.refs ) { -%>
+- *External references* :: {{refs}}
+<% } -%>
+
+<% if (unread.desc) { -%>
+
+## ==Abstract==
+#+BEGIN_QUOTE
+<%- unread.desc %>
+#+END_QUOTE
+<% } -%>
+
+## ==Annotations==
+<% if (unread.annotations.length > 0) { %>
+<%- my_annotations %>
+<% } -%>
+<% } %>

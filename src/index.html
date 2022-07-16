@@ -37,7 +37,7 @@
           let eles = top?.document.querySelectorAll("div.simpread-panel");
           return eles.length !== 0;
         }, 100);
-        showIframe(url, false);
+        showIframe(url, url?.includes("#"));
       }
 
       function hookSimpreadLinks(pointerEvent) {
@@ -67,12 +67,14 @@
         console.log("showIframe: url is", url);
         let iframe = top?.document.querySelector("iframe.simpread-iframe");
         if (iframe) {
+          // iframe.onLoad = () => {};
           iframe.style.display = "block";
           if (iframe?.src == url) reload && (iframe.src += "");
           else iframe.src = url;
+          // iframe.onLoad = onIframeURLChange;
           return;
         }
-        const html = `<iframe class="simpread-iframe" src="${url}" title="简悦·稍后读" width="100%" id="frame_full" frameborder="0" scrolling="auto"></iframe>`;
+        const html = `<iframe class="simpread-iframe" src="${url}" title="简悦·稍后读" width="100%" id="frame_full" frameborder="0" scrolling="auto" onLoad="onIframeURLChange();"></iframe>`;
         let ele = createElementFromHTML(html);
         ele.style.height = "calc(100% - 200px)";
         ele.style.margin = "0px";
@@ -121,6 +123,22 @@
           injectSimpreadBtn();
         }
       }
+
+      async function onIframeURLChange() {
+        // UNIMPLEMENTED!
+        if (false) {
+          const iframe = top?.document.querySelector("iframe.simpread-iframe");
+          const newURL = iframe?.src;
+          try {
+            // if (!/\/unread\/(reading\/)?[0-9]+(\?embed=logseq)?(#id=[0-9]+)?$/.test(newURL)) return;
+            const title = document.querySelector("sr-rd-title").innerText;
+            await logseq.Editor.getAllPages().filter((x) => x?.name == title);
+            open("logseq://graph/Garten?page=" + title);
+          } catch (e) {}
+        }
+      }
+
+      top.onIframeURLChange = onIframeURLChange;
 
       function main() {
         isDebug && logseq.App.showMsg("❤️ logseq-simpread has bean loaded!");
