@@ -1,11 +1,13 @@
-h1. logseq-simpread
+<p align="center"><img src="https://raw.githubusercontent.com/OverflowCat/logseq-simpread/master/logo/logo.svg" height="250px" width="250px">
+<large><b>logseq-simpread</b></large>
+<p align="center">The official <a href="https://github.com/logseq/logseq">Logseq</a> plugin of <a href="https://github.com/Kenshin/simpread">SimpRead</a>.</p>
+</p>
 
-The official logseq plugin of SimpRead.
-
+https://user-images.githubusercontent.com/20166026/179386714-38d2c5e0-690f-4df4-82b3-d16108350fc1.mp4
 
 h2. Usage
 
-注意：本页面不包含使用教程，请前往 discussions 查看。
+注意：本页面不包含使用教程，请前往简悦的 "这条 discussion":https://github.com/Kenshin/simpread/discussions/4220 查看。
 
 Currently the plugin contains only one function: triggering the reading list panel.
 
@@ -17,6 +19,8 @@ To use this plugin, you need:
 * *Knowledge base* configured
 * *Automation* configured and enabled
 * *Markdown 模板辅助增强插件* installed and template configured
+
+The template used in the demo video is under @templates@.
 
 h2. Publishing
 
@@ -48,7 +52,11 @@ Currently the toolbar icon is in SVG format, which requires @.st1{stroke: #xxxxx
 
 h3. Scroll bar
 
-The style of the scroll bar of the iframe does not match the official one's. 
+The style of the scroll bar of the iframe does not match the official one's.
+
+h3. Hardcoded URL
+
+The port of simpread-sync is hardcoded to @7026@. A configuration UI will be added in the future.
 
 h2. Roadmap
 
