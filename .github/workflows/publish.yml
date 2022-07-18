@@ -24,16 +24,13 @@ jobs:
           sed -e "8r lsplugin.user.min.js" -i 'src/index.html'
           sed -i '8i<script>\n' -i 'src/index.html'
           sed -i '10i</script>\n' -i 'src/index.html'
-      - name: Create archive 
+      - name: Create and upload archive 
         run: |
           cd logseq-simpread
           version=$(jq -r '.version' package.json)
           echo "Now packaging version $version…"
           zip logseq-simpread-v${version}.zip src/* LICENSE README.* package.json logo/*.svg
-      - name: Upload archive 
-        run: |
-          cd logseq-simpread
-          gh release create v${version} logseq-simpread-v${version}.zip
+          gh release create v${version} logseq-simpread-v${version}.zip package.json
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           OWNER: ${{ github.repository_owner }}
