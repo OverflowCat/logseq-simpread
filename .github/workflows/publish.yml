@@ -21,17 +21,17 @@ jobs:
       - name: Bundle Logseq dependency
         run: |
           cd logseq-simpread
-          curl "https://cdn.jsdelivr.net/npm/@logseq/libs/dist/lsplugin.user.min.js" > lsplugin.user.min.js
+          echo "<script>" > lsplugin.user.min.js
+          curl "https://cdn.jsdelivr.net/npm/@logseq/libs/dist/lsplugin.user.min.js" >> lsplugin.user.min.js
+          echo "</script>" >> lsplugin.user.min.js
           sed '8d' -i 'src/index.html'
-          sed -e "8r lsplugin.user.min.js" -i 'src/index.html'
-          sed -i '8i<script>\n' -i 'src/index.html'
-          sed -i '10i</script>\n' -i 'src/index.html'
+          sed -e "7r lsplugin.user.min.js" -i 'src/index.html'
       - name: Create and upload archive 
         run: |
           cd logseq-simpread
           version=$(jq -r '.version' package.json)
           echo "Now packaging version $version…"
-          zip logseq-simpread-v${version}.zip src/* LICENSE README.* package.json logo/*.svg
+          zip logseq-simpread-v${version}.zip src/* LICENSE README.md package.json logo/*.svg
           gh release create v${version} logseq-simpread-v${version}.zip package.json
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
