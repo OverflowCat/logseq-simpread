@@ -7,11 +7,12 @@ jobs:
       - name: Publish
         run: |
           echo "Converting README…"
-          ls
-          sudo apt-get -y install pandoc
+          echo $(ls)
+          sudo apt-get -y install pandoc jq
+          git clone https://github.com/OverflowCat/logseq-simpread.git
+          cd logseq-simpread
           pandoc -i README.textile -o README.html
           mv README.html README.md
-
           echo "Bundling Logseq dependency…"
           curl "https://cdn.jsdelivr.net/npm/@logseq/libs/dist/lsplugin.user.min.js" > lsplugin.user.min.js
           sed '8d' -i 'src/index.html'
@@ -19,7 +20,6 @@ jobs:
           sed -i '8i<script>\n' -i 'src/index.html'
           sed -i '10i</script>\n' -i 'src/index.html'
 
-          sudo apt-get -y install jq
           version=$(jq -r '.version' package.json)
           echo "Now packaging version $version…"
 
