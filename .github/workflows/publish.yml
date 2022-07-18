@@ -10,7 +10,7 @@ jobs:
           tar -zxvf pandoc-2.18-linux-amd64.tar.gz -C ./
           mv pandoc-2.18/bin/pandoc ./pandoc
       - name: Clone repo
-        run: "git clone https://github.com/ofneko/logseq-simpread.git"
+        run: "git clone https://github.com/OverflowCat/logseq-simpread.git"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Convert README
