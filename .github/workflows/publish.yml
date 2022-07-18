@@ -11,6 +11,8 @@ jobs:
           mv pandoc-2.18/bin/pandoc ./pandoc
       - name: Clone repo
         run: "gh repo clone ${{ github.event.repository.name }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Convert README
         run: |
           cd logseq-simpread
@@ -33,5 +35,3 @@ jobs:
           gh release create v${version} logseq-simpread-v${version}.zip package.json
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          OWNER: ${{ github.repository_owner }}
-          REPO: ${{ github.event.repository.name }}
