@@ -24,7 +24,7 @@ jobs:
           echo "Now packaging version $version…"
 
           echo "Creating archive…"
-          zip 'logseq-simpread-v{$version}.zip' src/* LICENSE README.* package.json logo/*.svg
+          zip 'logseq-simpread-v${version}.zip' src/* LICENSE README.* package.json logo/*.svg
 
           echo "Uploading archive…"
           gh release create v${version} 'logseq-simpread-v{$version}.zip'
