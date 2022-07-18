@@ -18,6 +18,7 @@ jobs:
           mv README.html README.md
       - name: Bundle Logseq dependency
         run: |
+          cd logseq-simpread
           curl "https://cdn.jsdelivr.net/npm/@logseq/libs/dist/lsplugin.user.min.js" > lsplugin.user.min.js
           sed '8d' -i 'src/index.html'
           sed -e "8r lsplugin.user.min.js" -i 'src/index.html'
@@ -25,15 +26,15 @@ jobs:
           sed -i '10i</script>\n' -i 'src/index.html'
       - name: Create archive 
         run: |
+          cd logseq-simpread
           version=$(jq -r '.version' package.json)
           echo "Now packaging version $version…"
           zip logseq-simpread-v${version}.zip src/* LICENSE README.* package.json logo/*.svg
       - name: Upload archive 
         run: |
+          cd logseq-simpread
           gh release create v${version} logseq-simpread-v${version}.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           OWNER: ${{ github.repository_owner }}
           REPO: ${{ github.event.repository.name }}
-      - name: haha
-        run: echo "haha"
