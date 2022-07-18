@@ -28,3 +28,10 @@ jobs:
 
           echo "Uploading archive…"
           gh release create v${version} 'logseq-simpread-v{$version}.zip'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OWNER: ${{ github.repository_owner }}
+          REPO: ${{ github.event.repository.name }}
+
+      - name: haha
+        run: echo "haha"
