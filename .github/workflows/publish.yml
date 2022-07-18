@@ -4,25 +4,26 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-      - run: |
-        echo "Converting README…"
-        sudo apt-get -y install pandoc
-        pandoc -i README.textile -o README.html
-        mv README.html README.md
+      - name: Publish
+        run: |
+          echo "Converting README…"
+          sudo apt-get -y install pandoc
+          pandoc -i README.textile -o README.html
+          mv README.html README.md
 
-        echo "Bundling Logseq dependency…"
-        curl "https://cdn.jsdelivr.net/npm/@logseq/libs/dist/lsplugin.user.min.js" > lsplugin.user.min.js
-        sed '8d' -i 'src/index.html'
-        sed -e "8r lsplugin.user.min.js" -i 'src/index.html'
-        sed -i '8i<script>\n' -i 'src/index.html'
-        sed -i '10i</script>\n' -i 'src/index.html'
+          echo "Bundling Logseq dependency…"
+          curl "https://cdn.jsdelivr.net/npm/@logseq/libs/dist/lsplugin.user.min.js" > lsplugin.user.min.js
+          sed '8d' -i 'src/index.html'
+          sed -e "8r lsplugin.user.min.js" -i 'src/index.html'
+          sed -i '8i<script>\n' -i 'src/index.html'
+          sed -i '10i</script>\n' -i 'src/index.html'
 
-        sudo apt-get -y install jq
-        version=$(jq -r '.version' package.json)
-        echo "Now packaging version $version…"
+          sudo apt-get -y install jq
+          version=$(jq -r '.version' package.json)
+          echo "Now packaging version $version…"
 
-        echo "Creating archive…"
-        zip 'logseq-simpread-v{$version}.zip' src/* LICENSE README.* package.json logo/*.svg
+          echo "Creating archive…"
+          zip 'logseq-simpread-v{$version}.zip' src/* LICENSE README.* package.json logo/*.svg
 
-        echo "Uploading archive…"
-        gh release create v${version} 'logseq-simpread-v{$version}.zip'
+          echo "Uploading archive…"
+          gh release create v${version} 'logseq-simpread-v{$version}.zip'
