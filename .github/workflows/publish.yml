@@ -9,7 +9,7 @@ jobs:
           echo "Converting README…"
           echo $(ls)
           sudo apt-get -y install pandoc jq
-          git clone https://github.com/OverflowCat/logseq-simpread.git
+          git clone https://github.com/ofneko/logseq-simpread.git
           cd logseq-simpread
           pandoc -i README.textile -o README.html
           mv README.html README.md
