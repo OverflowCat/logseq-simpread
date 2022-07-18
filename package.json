@@ -1,6 +1,6 @@
 {
   "name": "logseq-simpread",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "The official Logseq plugin of SimpRead.",
   "main": "src/index.html",
   "scripts": {
