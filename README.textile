@@ -1,3 +1,5 @@
+*!IMPORTANT: THEME `logseq-dev-theme` IS INCOMPATIBLE WITH THIS PLUGIN. REFER TO https://github.com/OverflowCat/logseq-simpread/issues/5.*
+
 <p align="center"><img src="https://raw.githubusercontent.com/OverflowCat/logseq-simpread/master/logo/logo.svg" height="250px" width="250px">
 <large><b>logseq-simpread</b></large>
 <p align="center">The official <a href="https://github.com/logseq/logseq">Logseq</a> plugin of <a href="https://github.com/Kenshin/simpread">SimpRead</a>.</p>
