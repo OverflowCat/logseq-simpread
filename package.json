@@ -1,6 +1,6 @@
 {
   "name": "logseq-simpread",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "The official Logseq plugin of SimpRead.",
   "main": "src/index.html",
   "scripts": {
@@ -10,7 +10,7 @@
   "author": "OverflowCat",
   "license": "MIT",
   "devDependencies": {
-    "@logseq/libs": "^0.0.6"
+    "@logseq/libs": "^0.0.15"
   },
   "logseq": {
     "id": "logseq-simpread",
